@@ -1,0 +1,12 @@
+{
+  "name": "@repo/validations",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "exports":{
+    "./src/index":"./src/index.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.4"
+  }
+}

@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Applicant
+  Recruiter
+}
+
+enum JobType {
+  FullTime
+  Internship
+}
+
+enum WorkMode {
+  Onsite
+  Remote
+}
+
+model User {
+  id                 String            @id @default(cuid())
+  name               String
+  email              String            @unique
+  emailVerified      DateTime?
+  password           String?
+  candidateProfile   CandidateProfile? @relation(fields: [candidateProfileId], references: [id], onDelete: Cascade)
+  recruiterProfile   RecruiterProfile? @relation(fields: [recruiterProfileId], references: [id], onDelete: Cascade)
+  candidateProfileId Int?
+  recruiterProfileId Int?
+  role               Role
+  image              String?
+  jobs               Jobs[]
+
+  accounts      Account[]
+  sessions      Session[]
+  Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Authenticator {
+  id                   String  @id @default(cuid())
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model CandidateProfile {
+  id       Int    @id @default(autoincrement())
+  User     User[]
+  phone    Int
+  bio      String
+  position String
+}
+
+model RecruiterProfile {
+  id              Int      @id @default(autoincrement())
+  User            User[]
+  companyName     String
+  companyLocation String
+  designation     String
+  companyWebsite  String?
+  workEmail       String?
+  createdAt       DateTime @default(now())
+}
+
+model Jobs {
+  id              String         @id @default(cuid())
+  User            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String?
+  title           String
+  jobDescription  String
+  lastDateToApply DateTime
+  isPaid          Boolean
+  salary          Int?
+  jobType         JobType
+  duration        String?
+  officeLocation  String
+  workMode        WorkMode
+  applications    Applications[]
+  createdAt       DateTime       @default(now())
+}
+
+model Applications {
+  id     String  @id @default(cuid())
+  Jobs   Jobs?   @relation(fields: [jobsId], references: [id], onDelete: Cascade)
+  jobsId String?
+}
