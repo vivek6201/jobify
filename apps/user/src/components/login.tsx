@@ -7,7 +7,6 @@ import { Separator } from "@repo/ui/ui/separator";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,7 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { loginValidations } from "@repo/validations/src/index";
-import { LoginValidationsType } from "../../../../packages/validations/src/authValidations";
+import { LoginValidationsType } from "@repo/validations/src/index";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
@@ -27,6 +26,8 @@ export default function Login() {
 
   async function onSubmit(values: LoginValidationsType) {
     await signIn("credentials", {
+      email: values.email,
+      password: values.password,
       redirect: false,
     });
   }
@@ -70,7 +71,7 @@ export default function Login() {
         </form>
       </Form>
 
-      <Separator className="my-5"/>
+      <Separator className="my-5" />
 
       <form action="" className="flex flex-col gap-y-5">
         <Input placeholder="Enter your Email" />
@@ -79,9 +80,11 @@ export default function Login() {
 
       <div className="mt-5 flex justify-center items-center">
         <p>Don't have an Account ?</p>
-            <Link href={"/signup"}>
-              <Button variant={"link"} className="text-blue-500">Create an Account</Button>
-            </Link>
+        <Link href={"/signup"}>
+          <Button variant={"link"} className="text-blue-500">
+            Create an Account
+          </Button>
+        </Link>
       </div>
     </div>
   );

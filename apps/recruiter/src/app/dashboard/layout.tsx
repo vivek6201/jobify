@@ -21,8 +21,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       logo: <Briefcase />,
     },
     {
-      link: "/dashboard/responses",
-      itemName: "Responses",
+      link: "/dashboard/messages",
+      itemName: "Messages",
       logo: <MessageCircle />,
     },
   ];

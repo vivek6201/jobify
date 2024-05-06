@@ -46,8 +46,9 @@ model User {
   sessions      Session[]
   Authenticator Authenticator[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  Responses Responses[]
 }
 
 model Account {
@@ -104,11 +105,85 @@ model VerificationToken {
 }
 
 model CandidateProfile {
-  id       Int    @id @default(autoincrement())
-  User     User[]
-  phone    Int
-  bio      String
-  position String
+  id         Int          @id @default(autoincrement())
+  User       User[]
+  phone      Int
+  bio        String
+  position   String
+  skills     Skill[]
+  socials    Socials[]
+  projects   Projects[]
+  education  Education[]
+  experience Experience[]
+  image      String?
+  createdAt  DateTime     @default(now())
+}
+
+model Skill {
+  id                 Int               @id @default(autoincrement())
+  skillName          String
+  CandidateProfile   CandidateProfile? @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int?
+  Projects           Projects?         @relation(fields: [projectsId], references: [id])
+  projectsId         Int?
+}
+
+model Socials {
+  id                 Int               @id @default(autoincrement())
+  socialName         String
+  socialUrl          String
+  CandidateProfile   CandidateProfile? @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int?
+
+  createdAt DateTime @default(now())
+}
+
+model Projects {
+  id                 Int               @id @default(autoincrement())
+  projectTitle       String
+  description        String
+  links              Links[]
+  skills             Skill[]
+  CandidateProfile   CandidateProfile? @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int?
+
+  createdAt DateTime @default(now())
+}
+
+model Links {
+  id         Int       @id @default(autoincrement())
+  linkType   String
+  url        String
+  Projects   Projects? @relation(fields: [projectsId], references: [id])
+  projectsId Int?
+}
+
+model Education {
+  id                 Int               @id @default(autoincrement())
+  universityName     String
+  fieldOfStudy       String
+  degree             String
+  grade              Float
+  startYear          DateTime
+  endYear            DateTime
+  createdAt          DateTime          @default(now())
+  CandidateProfile   CandidateProfile? @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int?
+}
+
+model Experience {
+  id                 Int               @id @default(autoincrement())
+  companyName        String
+  jobType            JobType
+  companyLink        String?
+  jobRole            String
+  location           String
+  startDate          String
+  endDate            String?
+  isWorking          Boolean           @default(false)
+  jobDescription     String
+  CandidateProfile   CandidateProfile? @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int?
 }
 
 model RecruiterProfile {
@@ -123,10 +198,11 @@ model RecruiterProfile {
 }
 
 model Jobs {
-  id              String         @id @default(cuid())
-  User            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String      @id @default(cuid())
+  User            User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String?
-  title           String
+  companyName     String
+  jobTitle           String
   jobDescription  String
   lastDateToApply DateTime
   isPaid          Boolean
@@ -135,12 +211,15 @@ model Jobs {
   duration        String?
   officeLocation  String
   workMode        WorkMode
-  applications    Applications[]
-  createdAt       DateTime       @default(now())
+  responses       Responses[]
+  createdAt       DateTime    @default(now())
 }
 
-model Applications {
-  id     String  @id @default(cuid())
+model Responses {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
   Jobs   Jobs?   @relation(fields: [jobsId], references: [id], onDelete: Cascade)
   jobsId String?
 }

@@ -9,7 +9,7 @@ export default function page() {
       <div className="hidden lg:flex">
         <Image src={"/nature.jpg"} width={1000} height={1000} alt="loginImg" className="w-full object-cover"/>
       </div>
-      <div className="grid place-items-center w-full">
+      <div className="grid place-items-center w-10/12 mx-auto">
         <Login />
       </div>
     </div>
